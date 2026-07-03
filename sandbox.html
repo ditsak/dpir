@@ -15,7 +15,6 @@
     border: 1px solid #ccc; border-radius: 8px; background: #fff;
     color: #1a1a1a; resize: none; outline: none; line-height: 1.6;
   }
-  /*#pad:focus { box-shadow: 0 0 0 1px #bdbdbd; }*/
   .stats { margin-top: .75rem; font-size: 13px; color: #666; display: flex; gap: 1rem; }
   .stats span { background: #eee; padding: 3px 10px; border-radius: 6px; }
   #clear-btn {
@@ -23,13 +22,17 @@
     border: 1px solid #ccc; border-radius: 6px; background: #eee; color: #444;
   }
   #clear-btn:hover { background: #fff; }
-
+  #layout-buttons {
+	  display: flex;
+	  flex-direction: row;
+	  gap: 15px;
+  }
   .lay-btn {
     margin-top: .75rem; font-size: 13px; padding: 5px 14px; cursor: pointer;
     border: 1px solid #ccc; border-radius: 6px; background: #eee; color: #444;
   }
   .lay-btn:hover { background: #fff; }
-
+  .lay-btn.active { background: #dbeafe; border-color: #93c5fd; color: #1a1a1a; }
   .kbd-wrap { margin-top: 1.5rem; display: flex; flex-direction: column; gap: 5px; }
   .row { display: flex; gap: 5px; justify-content: center; }
   .k {
@@ -39,17 +42,8 @@
     font-size: 15px; color: #1a1a1a; position: relative; cursor: default;
     transition: background .1s;
   }
-  .k .qwerty {
-    font-size: 8px; color: #aaa; position: absolute; top: 2px; left: 4px;
-  }
+  .k .qwerty { font-size: 8px; color: #aaa; position: absolute; top: 2px; left: 4px; }
   .k.lit { background: #dbeafe; border-color: #93c5fd; }
-
-  /* ── EDIT YOUR LAYOUT HERE ─────────────────────────────────────────────
-     Each entry is { q: 'physical key', a: 'armenian character' }
-     - q should be the lowercase key label (`, 1, 2, a, s, d, /, etc.)
-     - a is what gets typed. Use the same char for keys you want to pass through.
-     - Shift automatically uppercases Armenian letters.
-     ────────────────────────────────────────────────────────────────────── */
 </style>
 </head>
 <body>
@@ -58,308 +52,322 @@
 <!--  Երկրորդ շերտ (մեծատառք եւ նշանք) բանայ Shift ստեղնով, իսկ երրորդ շերտն (թաքուսեալ տառք եւ նշանք) բանայ ձախ Alt-ով -->
 <textarea id="pad" placeholder="սկսիր տպել" spellcheck="false"></textarea>
 <div class="stats">
-	<span id="char-count">0 նշանք</span><span id="word-count">0 բանք</span>
+  <span id="char-count">0 նշանք</span><span id="word-count">0 բանք</span>
 </div>
+<div id="layout-buttons">
 <button id="clear-btn">Մաքրել</button>
-<!-- 
-<button class="lay-btn" id="use-kav">ԿԱՒ Ա Շարուածք</button>
-<button class="lay-btn" id="use-mod">ԿԱՒ Գ Շարուածք</button>
-<button class="lay-btn" id="use-sav-mod">ՓԷԶ / ՓԷՔ Բ Շարուածք</button>
-<button class="lay-btn" id="use-sav">ՓԷԶ Գ Շարուածք</button>
--->
-<button class="lay-btn" id="use-pek">ՓԷՔ Շարուածք</button>
-<button class="lay-btn" id="use-pez-numless">ՓԷԶ Դ</button>
+</div>
 <div class="kbd-wrap" id="kbd"></div>
 
 <script>
 // ════════════════════════════════════════════════════════════════════════
-//  EDIT YOUR LAYOUT HERE
+//  ADD / REMOVE LAYOUTS HERE — that's the only file you ever need to edit.
+//
+//  Format:
+//    "Button label": [ row0, row1, row2, row3 ]
+//
 //  Each row is an array of { q, a } pairs:
-//    q = the physical key you press (lowercase)
-//    a = the Armenian (or other) character that comes out
-//  Keys where q === a are passed through unchanged (numbers, punctuation).
+//    q = physical key (lowercase)
+//    a = character that comes out (use same char to pass through unchanged)
+//
+//  The first entry in the list becomes the default active layout.
+// ════════════════════════════════════════════════════════════════════════
+const LAYOUTS = {
+
+	"ՓԷՔ Շարուածք": [
+		[
+			{q:'`',a:'ժ'}, {q:'1',a:'1'}, {q:'2',a:'2'}, {q:'3',a:'3'}, {q:'4',a:'4'},
+			{q:'5',a:'5'}, {q:'6',a:'6'}, {q:'7',a:'7'}, {q:'8',a:'8'}, {q:'9',a:'9'},
+			{q:'0',a:'0'}, {q:'-',a:'չ'}, {q:'=',a:'ճ'}
+		],
+		[
+			{q:'q',a:'փ'}, {q:'w',a:'է'}, {q:'e',a:'ք'}, {q:'r',a:'դ'}, {q:'t',a:'ձ'},
+			{q:'y',a:'հ'}, {q:'u',a:'տ'}, {q:'i',a:'յ'}, {q:'o',a:'ց'}, {q:'p',a:'գ'},
+			{q:'[',a:'պ'}, {q:']',a:'խ'}, {q:'\\',a:'ռ'} 
+		],
+		[
+			{q:'a',a:'ի'}, {q:'s',a:'ե'}, {q:'d',a:'ա'}, {q:'f',a:'ո'}, {q:'g',a:'զ'},
+			{q:'h',a:'ս'}, {q:'j',a:'ր'}, {q:'k',a:'ն'}, {q:'l',a:'ւ'}, {q:';',a:'մ'},
+			{q:"'",a:'վ'}
+		],
+		[
+			{q:'z',a:'ջ'}, {q:'x',a:'ը'}, {q:'c',a:'թ'}, {q:'v',a:'շ'}, {q:'b',a:'ծ'},
+			{q:'n',a:'ղ'}, {q:'m',a:'կ'}, {q:',',a:'լ'}, {q:'.',a:'բ'}, {q:'/',a:','}
+		],
+	],
+
+	"ՓԷՔ 2": [
+		[
+			{q:'`',a:'ժ'}, {q:'1',a:'1'}, {q:'2',a:'2'}, {q:'3',a:'3'}, {q:'4',a:'4'},
+			{q:'5',a:'5'}, {q:'6',a:'6'}, {q:'7',a:'7'}, {q:'8',a:'8'}, {q:'9',a:'9'},
+			{q:'0',a:'0'}, {q:'-',a:'չ'}, {q:'=',a:'ճ'}
+		],
+		[
+			{q:'q',a:'փ'}, {q:'w',a:'է'}, {q:'e',a:'ք'}, {q:'r',a:'դ'}, {q:'t',a:'ձ'},
+			{q:'y',a:'հ'}, {q:'u',a:'տ'}, {q:'i',a:'յ'}, {q:'o',a:'ց'}, {q:'p',a:'գ'},
+			{q:'[',a:'պ'}, {q:']',a:'խ'}, {q:'\\',a:'ռ'} 
+		],
+		[
+			{q:'a',a:'ի'}, {q:'s',a:'ե'}, {q:'d',a:'ո'}, {q:'f',a:'ա'}, {q:'g',a:'զ'},
+			{q:'h',a:'ս'}, {q:'j',a:'ն'}, {q:'k',a:'ր'}, {q:'l',a:'ւ'}, {q:';',a:'մ'},
+			{q:"'",a:'վ'}
+		],
+		[
+			{q:'z',a:'ջ'}, {q:'x',a:'ը'}, {q:'c',a:'թ'}, {q:'v',a:'շ'}, {q:'b',a:'ծ'},
+			{q:'n',a:'ղ'}, {q:'m',a:'կ'}, {q:',',a:'լ'}, {q:'.',a:'բ'}, {q:'/',a:','}
+		],
+	],
+
+	"ՓԷՔ Ն Շարուածք": [
+		[
+			{q:'`',a:'ժ'}, {q:'1',a:'1'}, {q:'2',a:'2'}, {q:'3',a:'3'}, {q:'4',a:'4'},
+			{q:'5',a:'5'}, {q:'6',a:'6'}, {q:'7',a:'7'}, {q:'8',a:'8'}, {q:'9',a:'9'},
+			{q:'0',a:'0'}, {q:'-',a:'չ'}, {q:'=',a:'ճ'}
+		],
+		[
+			{q:'q',a:'փ'}, {q:'w',a:'հ'}, {q:'e',a:'զ'}, {q:'r',a:'դ'}, {q:'t',a:'ձ'},
+			{q:'y',a:'շ'}, {q:'u',a:'ղ'}, {q:'i',a:'ց'}, {q:'o',a:'լ'}, {q:'p',a:'գ'},
+			{q:'[',a:'պ'}, {q:']',a:'խ'}, {q:'\\',a:'ռ'} 
+		],
+		[
+			{q:'a',a:'ի'}, {q:'s',a:'ե'}, {q:'d',a:'ա'}, {q:'f',a:'ո'}, {q:'g',a:'ք'},
+			{q:'h',a:'ս'}, {q:'j',a:'ր'}, {q:'k',a:'ն'}, {q:'l',a:'ւ'}, {q:';',a:'յ'},
+			{q:"'",a:'մ'}
+		],
+		[
+			{q:'z',a:'ջ'}, {q:'x',a:'ը'}, {q:'c',a:'թ'}, {q:'v',a:'է'}, {q:'b',a:'ծ'},
+			{q:'n',a:'տ'}, {q:'m',a:'կ'}, {q:',',a:'վ'}, {q:'.',a:'բ'}, {q:'/',a:','}
+		],
+	],
+
+	"tiwk": [
+		[
+			{q:'`',a:'՜'}, {q:'1',a:'ճ'}, {q:'2',a:'ժ'}, {q:'3',a:'՛'}, {q:'4',a:':'},
+			{q:'5',a:','}, {q:'6',a:'.'}, {q:'7',a:'՞'}, {q:'8',a:'՝'}, {q:'9',a:'չ'},
+			{q:'0',a:'ջ'}, {q:'-',a:'-'}, {q:'=',a:'+'}
+		],
+		[
+			{q:'q',a:'փ'}, {q:'w',a:'հ'}, {q:'e',a:'զ'}, {q:'r',a:'դ'}, {q:'t',a:'ձ'},
+			{q:'y',a:'շ'}, {q:'u',a:'ղ'}, {q:'i',a:'ց'}, {q:'o',a:'լ'}, {q:'p',a:'գ'},
+			{q:'[',a:'պ'}, {q:']',a:'խ'}, {q:'\\',a:'«'} 
+		],
+		[
+			{q:'a',a:'ի'}, {q:'s',a:'ե'}, {q:'d',a:'ա'}, {q:'f',a:'ո'}, {q:'g',a:'ք'},
+			{q:'h',a:'ս'}, {q:'j',a:'ր'}, {q:'k',a:'ն'}, {q:'l',a:'ւ'}, {q:';',a:'յ'},
+			{q:"'",a:'մ'}
+		],
+		[
+			{q:'z',a:'ռ'}, {q:'x',a:'ը'}, {q:'c',a:'թ'}, {q:'v',a:'է'}, {q:'b',a:'ծ'},
+			{q:'n',a:'տ'}, {q:'m',a:'կ'}, {q:',',a:'վ'}, {q:'.',a:'բ'}, {q:'/',a:','}
+		],
+	],
+
+	"Չորք": [
+		[
+			{q:'`',a:'՜'}, {q:'1',a:'՛'}, {q:'2',a:'՝'}, {q:'3',a:'3'}, {q:'4',a:'չ'},
+			{q:'5',a:'ժ'}, {q:'6',a:'.'}, {q:'7',a:'՞'}, {q:'8',a:'('}, {q:'9',a:'ճ'},
+			{q:'0',a:'ջ'}, {q:'-',a:'-'}, {q:'=',a:'+'}
+		],
+		[
+			{q:'q',a:'փ'}, {q:'w',a:'հ'}, {q:'e',a:'զ'}, {q:'r',a:'դ'}, {q:'t',a:'ձ'},
+			{q:'y',a:'շ'}, {q:'u',a:'ղ'}, {q:'i',a:'ց'}, {q:'o',a:'լ'}, {q:'p',a:'գ'},
+			{q:'[',a:'պ'}, {q:']',a:'խ'}, {q:'\\',a:'«'} 
+		],
+		[
+			{q:'a',a:'ի'}, {q:'s',a:'ե'}, {q:'d',a:'ա'}, {q:'f',a:'ո'}, {q:'g',a:'ք'},
+			{q:'h',a:'ս'}, {q:'j',a:'ր'}, {q:'k',a:'ն'}, {q:'l',a:'ւ'}, {q:';',a:'յ'},
+			{q:"'",a:'մ'}
+		],
+		[
+			{q:'z',a:'ռ'}, {q:'x',a:'ը'}, {q:'c',a:'թ'}, {q:'v',a:'է'}, {q:'b',a:'ծ'},
+			{q:'n',a:'տ'}, {q:'m',a:'կ'}, {q:',',a:'վ'}, {q:'.',a:'բ'}, {q:'/',a:','}
+		],
+	],
+
+	"ՓԷՔ ֆ Շարուածք": [
+		[
+			{q:'`',a:'ժ'}, {q:'1',a:'1'}, {q:'2',a:'2'}, {q:'3',a:'3'}, {q:'4',a:'4'},
+			{q:'5',a:'5'}, {q:'6',a:'6'}, {q:'7',a:'7'}, {q:'8',a:'8'}, {q:'9',a:'9'},
+			{q:'0',a:'0'}, {q:'-',a:'չ'}, {q:'=',a:'ճ'}
+		],
+		[
+			{q:'q',a:'փ'}, {q:'w',a:'հ'}, {q:'e',a:'զ'}, {q:'r',a:'դ'}, {q:'t',a:'ձ'},
+			{q:'y',a:'շ'}, {q:'u',a:'ղ'}, {q:'i',a:'ց'}, {q:'o',a:'լ'}, {q:'p',a:'գ'},
+			{q:'[',a:'պ'}, {q:']',a:'խ'}, {q:'\\',a:'ռ'} 
+		],
+		[
+			{q:'a',a:'ի'}, {q:'s',a:'ւ'}, {q:'d',a:'ա'}, {q:'f',a:'ո'}, {q:'g',a:'ք'},
+			{q:'h',a:'ս'}, {q:'j',a:'ր'}, {q:'k',a:'ն'}, {q:'l',a:'ե'}, {q:';',a:'ե'},
+			{q:"'",a:'մ'}
+		],
+		[
+			{q:'z',a:'ջ'}, {q:'x',a:'ը'}, {q:'c',a:'թ'}, {q:'v',a:'է'}, {q:'b',a:'ծ'},
+			{q:'n',a:'տ'}, {q:'m',a:'յ'}, {q:',',a:'վ'}, {q:'.',a:'բ'}, {q:'/',a:','}
+		],
+	],
+
+	"ԿԱՒ Գ Շարուածք": [
+		[
+			{q:'`',a:'ճ'}, {q:'1',a:'1'}, {q:'2',a:'2'}, {q:'3',a:'3'}, {q:'4',a:'4'},
+			{q:'5',a:'5'}, {q:'6',a:'6'}, {q:'7',a:'7'}, {q:'8',a:'8'}, {q:'9',a:'9'},
+			{q:'0',a:'0'}, {q:'-',a:'ժ'}, {q:'=',a:'ձ'}
+		],
+		[
+			{q:'q',a:'ռ'}, {q:'w',a:'բ'}, {q:'e',a:'է'}, {q:'r',a:'պ'}, {q:'t',a:'ծ'},
+			{q:'y',a:'փ'}, {q:'u',a:'ղ'}, {q:'i',a:'տ'}, {q:'o',a:'լ'}, {q:'p',a:'խ'},
+			{q:'[',a:'վ'}, {q:']',a:'չ'}, {q:'\\',a:'ջ'} 
+		],
+		[
+			{q:'a',a:'ր'}, {q:'s',a:'ի'}, {q:'d',a:'ն'}, {q:'f',a:'ե'}, {q:'g',a:'մ'},
+			{q:'h',a:'կ'}, {q:'j',a:'ա'}, {q:'k',a:'ւ'}, {q:'l',a:'ո'}, {q:';',a:'յ'},
+			{q:"'",a:'ք'}
+		],
+		[
+			{q:'z',a:'ը'}, {q:'x',a:'շ'}, {q:'c',a:'թ'}, {q:'v',a:'զ'}, {q:'b',a:'ս'},
+			{q:'n',a:'գ'}, {q:'m',a:'ց'}, {q:',',a:'հ'}, {q:'.',a:'դ'}, {q:'/',a:','}
+		],
+	],
+
+	"ԿԱՒ Դ Շարուածք": [
+		[
+			{q:'`',a:'ժ'},{q:'1',a:'՛'},{q:'2',a:'՝'},{q:'3',a:'՜'},{q:'4',a:'='},
+			{q:'5',a:'+'},{q:'6',a:'.'},{q:'7',a:'՞'},{q:'8',a:'-'},{q:'9',a:'('},
+			{q:'0',a:')'},{q:'-',a:','},{q:'=',a:'ճ'}
+		],
+		[
+			{q:'q',a:'փ'},{q:'w',a:'է'},{q:'e',a:'ք'},{q:'r',a:'դ'},{q:'t',a:'ձ'},
+			{q:'y',a:'շ'},{q:'u',a:'տ'},{q:'i',a:'զ'},{q:'o',a:'ց'},{q:'p',a:'գ'},
+			{q:'[',a:'պ'},{q:']',a:'խ'},{q:'\\',a:'ռ'}
+		],
+		[
+			{q:'a',a:'ր'},{q:'s',a:'ի'},{q:'d',a:'ն'},{q:'f',a:'ե'},{q:'g',a:'մ'},
+			{q:'h',a:'ս'},{q:'j',a:'ա'},{q:'k',a:'ւ'},{q:'l',a:'ո'},{q:';',a:'յ'},
+			{q:"'",a:'վ'}
+		],
+		[
+			{q:'z',a:'ջ'},{q:'x',a:'ը'},{q:'c',a:'թ'},{q:'v',a:'հ'},{q:'b',a:'ծ'},
+			{q:'n',a:'ղ'},{q:'m',a:'կ'},{q:',',a:'լ'},{q:'.',a:'բ'},{q:'/',a:'չ'}
+		],
+	],
+
+	"ԿԱՒ Ե Շարուածք": [
+		[
+			{q:'`',a:'ճ'}, {q:'1',a:'1'}, {q:'2',a:'2'}, {q:'3',a:'3'}, {q:'4',a:'4'},
+			{q:'5',a:'5'}, {q:'6',a:'6'}, {q:'7',a:'7'}, {q:'8',a:'8'}, {q:'9',a:'9'},
+			{q:'0',a:'0'}, {q:'-',a:'ժ'}, {q:'=',a:'ձ'}
+		],
+		[
+			{q:'q',a:'փ'}, {q:'w',a:'բ'}, {q:'e',a:'ղ'}, {q:'r',a:'պ'}, {q:'t',a:'ծ'},
+			{q:'y',a:'փ'}, {q:'u',a:'ղ'}, {q:'i',a:'տ'}, {q:'o',a:'լ'}, {q:'p',a:'խ'},
+			{q:'[',a:'վ'}, {q:']',a:'չ'}, {q:'\\',a:'ջ'} 
+		],
+		[
+			{q:'a',a:'ր'}, {q:'s',a:'ի'}, {q:'d',a:'ն'}, {q:'f',a:'ե'}, {q:'g',a:'ք'},
+			{q:'h',a:'ց'}, {q:'j',a:'ա'}, {q:'k',a:'ւ'}, {q:'l',a:'ո'}, {q:';',a:'յ'},
+			{q:"'",a:'մ'}
+		],
+		[
+			{q:'z',a:'ը'}, {q:'x',a:'շ'}, {q:'c',a:'թ'}, {q:'v',a:'զ'}, {q:'b',a:'ս'},
+			{q:'n',a:'գ'}, {q:'m',a:'կ'}, {q:',',a:'հ'}, {q:'.',a:'դ'}, {q:'/',a:','}
+		],
+	],
+
+
+
+  // ── ADD NEW LAYOUTS BELOW THIS LINE ─────────────────────────────────
+  // Copy any block above, give it a new label, change the letters, done.
+
+};
 // ════════════════════════════════════════════════════════════════════════
 
-const kav_layout = [
-	// Number row
-	[
-		{q:'`', a:'ճ'}, {q:'1', a:'1'}, {q:'2', a:'2'}, {q:'3', a:'3'}, {q:'4', a:'4'},
-		{q:'5', a:'5'}, {q:'6', a:'6'}, {q:'7', a:'7'}, {q:'8', a:'8'}, {q:'9', a:'9'},
-		{q:'0', a:'0'}, {q:'-', a:'ջ'}, {q:'=', a:'ձ'}
-	],
-	// Top letter row (QWERTY)
-	[
-		{q:'q', a:'զ'}, {q:'w', a:'լ'}, {q:'e', a:'է'}, {q:'r', a:'ծ'}, {q:'t', a:'թ'},
-		{q:'y', a:'ռ'}, {q:'u', a:'ց'}, {q:'i', a:'մ'}, {q:'o', a:'գ'}, {q:'p', a:'խ'},
-		{q:'[', a:'չ'}, {q:']', a:'ը'}, {q:'\\',a:'ժ'}
-	],
-	// Home row (ASDF)
-	[
-		{q:'a', a:'ր'}, {q:'s', a:'ի'}, {q:'d', a:'ն'}, {q:'f', a:'ե'}, {q:'g', a:'ս'},
-		{q:'h', a:'կ'}, {q:'j', a:'ա'}, {q:'k', a:'ւ'}, {q:'l', a:'ո'}, {q:';', a:'յ'},
-		{q:"'", a:'ք'}
-	],
-	// Bottom row (ZXCV)
-	[
-		{q:'z', a:'դ'}, {q:'x', a:'շ'}, {q:'c', a:'պ'}, {q:'v', a:'բ'}, {q:'b', a:'հ'},
-		{q:'n', a:'տ'}, {q:'m', a:'ղ'}, {q:',', a:'փ'}, {q:'.', a:'վ'}, {q:'/', a:','}
-	]
-];
 
-const kav_mod_layout = [
-	// Number row
-	[
-		{q:'`', a:'ճ'}, {q:'1', a:'1'}, {q:'2', a:'2'}, {q:'3', a:'3'}, {q:'4', a:'4'},
-		{q:'5', a:'5'}, {q:'6', a:'6'}, {q:'7', a:'7'}, {q:'8', a:'8'}, {q:'9', a:'9'},
-		{q:'0', a:'0'}, {q:'-', a:'ժ'}, {q:'=', a:'ձ'}
-	],
-	// Top letter row (QWERTY)
-	[
-		{q:'q', a:'ռ'}, {q:'w', a:'բ'}, {q:'e', a:'է'}, {q:'r', a:'պ'}, {q:'t', a:'ծ'},
-		{q:'y', a:'փ'}, {q:'u', a:'ղ'}, {q:'i', a:'տ'}, {q:'o', a:'լ'}, {q:'p', a:'խ'},
-		{q:'[', a:'վ'}, {q:']', a:'չ'}, {q:'\\',a:'ջ'}
-	],
-	// Home row (ASDF)
-	[
-		{q:'a', a:'ր'}, {q:'s', a:'ի'}, {q:'d', a:'ն'}, {q:'f', a:'ե'}, {q:'g', a:'մ'},
-		{q:'h', a:'կ'}, {q:'j', a:'ա'}, {q:'k', a:'ւ'}, {q:'l', a:'ո'}, {q:';', a:'յ'},
-		{q:"'", a:'ք'}
-	],
-	// Bottom row (ZXCV)
-	[
-		{q:'z', a:'ը'}, {q:'x', a:'շ'}, {q:'c', a:'թ'}, {q:'v', a:'զ'}, {q:'b', a:'ս'},
-		{q:'n', a:'գ'}, {q:'m', a:'ց'}, {q:',', a:'հ'}, {q:'.', a:'դ'}, {q:'/', a:','}
-	]
-];
+// ── Engine — nothing below needs editing ────────────────────────────────
 
-const sav_layout = [
-	// Number row
-	[
-		{q:'`', a:'ժ'}, {q:'1', a:'1'}, {q:'2', a:'2'}, {q:'3', a:'3'}, {q:'4', a:'4'},
-		{q:'5', a:'5'}, {q:'6', a:'6'}, {q:'7', a:'7'}, {q:'8', a:'8'}, {q:'9', a:'9'},
-		{q:'0', a:'0'}, {q:'-', a:'չ'}, {q:'=', a:'ճ'}
-	],
-	// Top letter row (QWERTY)
-	[
-		{q:'q', a:'փ'}, {q:'w', a:'է'}, {q:'e', a:'զ'}, {q:'r', a:'դ'}, {q:'t', a:'ձ'},
-		{q:'y', a:'շ'}, {q:'u', a:'ղ'}, {q:'i', a:'յ'}, {q:'o', a:'ց'}, {q:'p', a:'գ'},
-		{q:'[', a:'պ'}, {q:']', a:'խ'}, {q:'\\',a:'ջ'}
-	],
-	// Home row (ASDF)
-	[
-		{q:'a', a:'ի'}, {q:'s', a:'ե'}, {q:'d', a:'ա'}, {q:'f', a:'ո'}, {q:'g', a:'ք'},
-		{q:'h', a:'ս'}, {q:'j', a:'ր'}, {q:'k', a:'ն'}, {q:'l', a:'ւ'}, {q:';', a:'մ'},
-		{q:"'", a:'վ'}
-	],
-	// Bottom row (ZXCV)
-	[
-		{q:'z', a:'ռ'}, {q:'x', a:'ը'}, {q:'c', a:'թ'}, {q:'v', a:'հ'}, {q:'b', a:'ծ'},
-		{q:'n', a:'տ'}, {q:'m', a:'կ'}, {q:',', a:'լ'}, {q:'.', a:'բ'}, {q:'/', a:','} ]
-];
+const pad        = document.getElementById('pad');
+const kbdEl      = document.getElementById('kbd');
+const btnWrapper = document.getElementById('layout-buttons');
+const rowOffsets = [0, 0.5, 0.5, 1.5];
 
-const pez_numless = [
-	// Number row
-	[
-		{q:'`', a:'ժ'}, {q:'1', a:'1'}, {q:'2', a:'2'}, {q:'3', a:'3'}, {q:'4', a:'4'},
-		{q:'5', a:'5'}, {q:'6', a:'6'}, {q:'7', a:'7'}, {q:'8', a:'8'}, {q:'9', a:'9'},
-		{q:'0', a:'0'}, {q:'-', a:','}, {q:'=', a:'ճ'}
-	],
-	// Top letter row (QWERTY)
-	[
-		{q:'q', a:'փ'}, {q:'w', a:'է'}, {q:'e', a:'զ'}, {q:'r', a:'դ'}, {q:'t', a:'ձ'},
-		{q:'y', a:'շ'}, {q:'u', a:'տ'}, {q:'i', a:'յ'}, {q:'o', a:'ց'}, {q:'p', a:'գ'},
-		{q:'[', a:'պ'}, {q:']', a:'խ'}, {q:'\\',a:'ռ'}
-	],
-	// Home row (ASDF)
-	[
-		{q:'a', a:'ի'}, {q:'s', a:'ե'}, {q:'d', a:'ա'}, {q:'f', a:'ո'}, {q:'g', a:'ք'},
-		{q:'h', a:'ս'}, {q:'j', a:'ր'}, {q:'k', a:'ն'}, {q:'l', a:'ւ'}, {q:';', a:'մ'},
-		{q:"'", a:'վ'}
-	],
-	// Bottom row (ZXCV)
-	[
-		{q:'z', a:'ջ'}, {q:'x', a:'ը'}, {q:'c', a:'թ'}, {q:'v', a:'հ'}, {q:'b', a:'ծ'},
-		{q:'n', a:'ղ'}, {q:'m', a:'կ'}, {q:',', a:'լ'}, {q:'.', a:'բ'}, {q:'/', a:'չ'} ]
-];
+let qToArm = {};
 
-const sav_mod_layout = [
-	// Number row
-	[
-		{q:'`', a:'ժ'}, {q:'1', a:'1'}, {q:'2', a:'2'}, {q:'3', a:'3'}, {q:'4', a:'4'},
-		{q:'5', a:'5'}, {q:'6', a:'6'}, {q:'7', a:'7'}, {q:'8', a:'8'}, {q:'9', a:'9'},
-		{q:'0', a:'0'}, {q:'-', a:'չ'}, {q:'=', a:'ճ'}
-	],
-	// Top letter row (QWERTY)
-	[
-		{q:'q', a:'փ'}, {q:'w', a:'է'}, {q:'e', a:'զ'}, {q:'r', a:'դ'}, {q:'t', a:'ձ'},
-		{q:'y', a:'շ'}, {q:'u', a:'ղ'}, {q:'i', a:'տ'}, {q:'o', a:'ց'}, {q:'p', a:'գ'},
-		{q:'[', a:'պ'}, {q:']', a:'խ'}, {q:'\\',a:'ջ'}
-	],
-	// Home row (ASDF)
-	[
-		{q:'a', a:'ի'}, {q:'s', a:'ե'}, {q:'d', a:'ա'}, {q:'f', a:'ո'}, {q:'g', a:'ք'},
-		{q:'h', a:'ս'}, {q:'j', a:'ր'}, {q:'k', a:'ն'}, {q:'l', a:'ւ'}, {q:';', a:'մ'},
-		{q:"'", a:'վ'}
-	],
-	// Bottom row (ZXCV)
-	[
-		{q:'z', a:'ը'}, {q:'x', a:'ռ'}, {q:'c', a:'թ'}, {q:'v', a:'հ'}, {q:'b', a:'ծ'},
-		{q:'n', a:'յ'}, {q:'m', a:'կ'}, {q:',', a:'լ'}, {q:'.', a:'բ'}, {q:'/', a:','} ]
-];
-
-const pek_layout = [
-	// Number row
-	[
-		{q:'`', a:'ժ'}, {q:'1', a:'1'}, {q:'2', a:'2'}, {q:'3', a:'3'}, {q:'4', a:'4'},
-		{q:'5', a:'5'}, {q:'6', a:'6'}, {q:'7', a:'7'}, {q:'8', a:'8'}, {q:'9', a:'9'},
-		{q:'0', a:'0'}, {q:'-', a:'չ'}, {q:'=', a:'ճ'}
-	],
-	// Top letter row (QWERTY)
-	[
-		{q:'q', a:'փ'}, {q:'w', a:'է'}, {q:'e', a:'ք'}, {q:'r', a:'դ'}, {q:'t', a:'ձ'},
-		{q:'y', a:'հ'}, {q:'u', a:'տ'}, {q:'i', a:'յ'}, {q:'o', a:'ց'}, {q:'p', a:'գ'},
-		{q:'[', a:'պ'}, {q:']', a:'խ'}, {q:'\\',a:'ռ'}
-	],
-	// Home row (ASDF)
-	[
-		{q:'a', a:'ի'}, {q:'s', a:'ե'}, {q:'d', a:'ա'}, {q:'f', a:'ո'}, {q:'g', a:'զ'},
-		{q:'h', a:'ս'}, {q:'j', a:'ր'}, {q:'k', a:'ն'}, {q:'l', a:'ւ'}, {q:';', a:'մ'},
-		{q:"'", a:'վ'}
-	],
-	// Bottom row (ZXCV)
-	[
-		{q:'z', a:'ջ'}, {q:'x', a:'ը'}, {q:'c', a:'թ'}, {q:'v', a:'շ'}, {q:'b', a:'ծ'},
-		{q:'n', a:'ղ'}, {q:'m', a:'կ'}, {q:',', a:'լ'}, {q:'.', a:'բ'}, {q:'/', a:','} ]
-];
-
-let which_layout = "PEZ-NUMLESS";
-let layout = pez_numless;
-
-const qToArm = {};
-
-// Build lookup map
-function build_lookup()
-{
-	layout.forEach(row => row.forEach(k => {
-		if (k.a && k.a !== k.q) qToArm[k.q] = k.a;
-	}));
+function build_lookup(layout) {
+  qToArm = {};
+  layout.forEach(row => row.forEach(k => {
+    if (k.a && k.a !== k.q) qToArm[k.q] = k.a;
+  }));
 }
 
-// Render visual keyboard
-function render_keyboard() 
-{
-	const rowOffsets = [0, 0.5, 0.5, 1.5];
-	const kbd = document.getElementById('kbd');
-	layout.forEach((row, ri) => {
-		const div = document.createElement('div');
-		div.className = 'row';
-		if (rowOffsets[ri] > 0) {
-			const sp = document.createElement('div');
-			sp.style.cssText = 'min-width:' + (rowOffsets[ri] * 8) + 'px';
-			div.appendChild(sp);
-		}
-		row.forEach(k => {
-			const el = document.createElement('div');
-			el.className = 'k';
-			el.id = 'key-' + k.q;
-			const qs = document.createElement('span');
-			qs.className = 'qwerty';
-			qs.lang = "en";   // 👈 this is the key line
-			qs.textContent = k.q.toUpperCase();
-			el.appendChild(qs);
-			el.appendChild(document.createTextNode(k.a));
-			div.appendChild(el);
-		});
-		kbd.appendChild(div);
-	});
+function render_keyboard(layout) {
+  kbdEl.replaceChildren();
+  layout.forEach((row, ri) => {
+    const div = document.createElement('div');
+    div.className = 'row';
+    if (rowOffsets[ri] > 0) {
+      const sp = document.createElement('div');
+      sp.style.cssText = 'min-width:' + (rowOffsets[ri] * 8) + 'px';
+      div.appendChild(sp);
+    }
+    row.forEach(k => {
+      const el = document.createElement('div');
+      el.className = 'k';
+      el.id = 'key-' + k.q;
+      const qs = document.createElement('span');
+      qs.className = 'qwerty';
+      qs.lang = 'en';
+      qs.textContent = k.q.toUpperCase();
+      el.appendChild(qs);
+      el.appendChild(document.createTextNode(k.a));
+      div.appendChild(el);
+    });
+    kbdEl.appendChild(div);
+  });
 }
 
-build_lookup()
-render_keyboard()
+function switch_layout(label, btn) {
+  build_lookup(LAYOUTS[label]);
+  render_keyboard(LAYOUTS[label]);
+  document.querySelectorAll('.lay-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+// Auto-generate one button per layout entry
+Object.keys(LAYOUTS).forEach((label, i) => {
+  const btn = document.createElement('button');
+  btn.className = 'lay-btn';
+  btn.textContent = label;
+  btn.addEventListener('click', () => switch_layout(label, btn));
+  btnWrapper.appendChild(btn);
+  if (i === 0) switch_layout(label, btn); // activate first layout by default
+});
 
 // Handle typing
-const pad = document.getElementById('pad');
 pad.addEventListener('keydown', e => {
-	if (e.ctrlKey || e.metaKey || e.altKey) return;
-	if (['Backspace','Delete','Tab','Enter'].includes(e.key)) return;
-	const arm = qToArm[e.key.toLowerCase()];
-	if (arm !== undefined) {
-		e.preventDefault();
-		const out = e.shiftKey ? arm.toUpperCase() : arm;
-		const s = pad.selectionStart, en = pad.selectionEnd;
-		pad.value = pad.value.slice(0, s) + out + pad.value.slice(en);
-		pad.selectionStart = pad.selectionEnd = s + out.length;
-		updateStats();
-		const el = document.getElementById('key-' + e.key.toLowerCase());
-		if (el) { el.classList.add('lit'); setTimeout(() => el.classList.remove('lit'), 150); }
-	}
+  if (e.ctrlKey || e.metaKey || e.altKey) return;
+  if (['Backspace','Delete','Tab','Enter'].includes(e.key)) return;
+  const arm = qToArm[e.key.toLowerCase()];
+  if (arm !== undefined) {
+    e.preventDefault();
+    const out = e.shiftKey ? arm.toUpperCase() : arm;
+    const s = pad.selectionStart, en = pad.selectionEnd;
+    pad.value = pad.value.slice(0, s) + out + pad.value.slice(en);
+    pad.selectionStart = pad.selectionEnd = s + out.length;
+    updateStats();
+    const el = document.getElementById('key-' + e.key.toLowerCase());
+    if (el) { el.classList.add('lit'); setTimeout(() => el.classList.remove('lit'), 150); }
+  }
 });
 
 function updateStats() {
-	const v = pad.value;
-	document.getElementById('char-count').textContent = v.length + ' նշանք';
-	document.getElementById('word-count').textContent =
-		(v.trim() ? v.trim().split(/\s+/).length : 0) + ' բանք';
+  const v = pad.value;
+  document.getElementById('char-count').textContent = v.length + ' նշանք';
+  document.getElementById('word-count').textContent =
+    (v.trim() ? v.trim().split(/\s+/).length : 0) + ' բանք';
 }
 
-
-///// LISTENERS
 pad.addEventListener('input', updateStats);
 
-// Keyboard layout update listeners
-document.getElementById('use-pez-numless').addEventListener('click', () => {
-	which_layout = "PEZ-NUMLESS"
-	layout = pez_numless
-	document.getElementById("kbd").replaceChildren();
-	build_lookup()
-	render_keyboard()
-});
-
-
-
-//document.getElementById('use-sav').addEventListener('click', () => {
-//	which_layout = "SAV"
-//	layout = sav_layout
-//	document.getElementById("kbd").replaceChildren();
-//	build_lookup()
-//	render_keyboard()
-//});
-//
-//document.getElementById('use-kav').addEventListener('click', () => {
-//	which_layout = "KAV"
-//	layout = kav_layout
-//	document.getElementById("kbd").replaceChildren();
-//	build_lookup()
-//	render_keyboard()
-//});
-//
-//document.getElementById('use-mod').addEventListener('click', () => {
-//	which_layout = "KAV-mod"
-//	layout = kav_mod_layout
-//	document.getElementById("kbd").replaceChildren();
-//	build_lookup()
-//	render_keyboard()
-//});
-
-//document.getElementById('use-sav-mod').addEventListener('click', () => {
-//	which_layout = "SAV-mod"
-//	layout = sav_mod_layout
-//	document.getElementById("kbd").replaceChildren();
-//	build_lookup()
-//	render_keyboard()
-//});
-
-document.getElementById('use-pek').addEventListener('click', () => {
-	which_layout = "PEK-mod"
-	layout = pek_layout
-	document.getElementById("kbd").replaceChildren();
-	build_lookup()
-	render_keyboard()
-});
-
-// Clear button
 document.getElementById('clear-btn').addEventListener('click', () => {
-	pad.value = ''; updateStats(); pad.focus();
+  pad.value = ''; updateStats(); pad.focus();
 });
 
 pad.focus();
