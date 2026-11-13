@@ -2,13 +2,6 @@ Read in: [English](#en) | [Հայերէն](#xcl)
 
 <img src="dpir.png" alt="Dpir keyboard layout" width="500"/>
 
-**ՈՒՇԱԴՐՈՒԹԻՒՆ**
-Տարբերակ զոր այժմ աստ հրապարակեալ է չէ վերջին:  
-Շուտով հրապարակեցից զթարմացեալ տարբերակ յորում ստեղնք ինչ տեղափոխեալ են:  
-
-**ATTENTION**
-The version that's currently posted here is not the final one.  
-Soon we'll post the updated version which has a few keys rearranged.
 
 <div id="xcl"></div>
 
@@ -35,7 +28,7 @@ Soon we'll post the updated version which has a few keys rearranged.
 
 ## Ուստի՞ անունն
 
-Դպիր ոչ լոկ նոտար կամ scholar նշանակէ, այղ նա եւ խելացի / գրագէտ: Նա եւ, իբրեւ ոք արեւմտահայերէն ասէ «դպի՛ր», հրամայէ տպել:
+Դպիր ոչ լոկ նոտար կամ scholar նշանակէ, այղ նա եւ խելացի / գրագէտ:
 
 <div id="xcl-dp"></div>
 
@@ -43,21 +36,19 @@ Soon we'll post the updated version which has a few keys rearranged.
 
 ### Շարք ստեղանց
 
-Մին ի նպատանաց այսց շարուածոց էր զբաղեցուցանել զնուազագոյն թիւ ստեղանց, առ յապահովել զյարմարութիւն, որպէս եւ զտեղի ունել վասն կիտադրական նշանաց: `Backslash` չգործածի զի երկար ձգումն իցէ վասն աջ ճկոյթի: Եւ զի յաճախագոյն կիտադրական նշանք՝ ստորակէտ եւ վերջակէտ հեշտ հասանելի լիցին, ընտրեալ եմք զ-`Slash` ստեղն, նմանեալ ЙЦУКЕН շարուածոց ռուսաց: Երեք տառք որք չէին մասն սկզբնական այբուբէնի Մաշտոցի՝ և, Օ եւ Ֆ փոխադրեալ են յերրորդ շերտն: Արտաքս երից գլխաւոր շարաց ստեղնաշարի են չորք ստեղանք ի շարս թուոց՝ 4-5 եւ 9-0 զի ամենահասանելիք են, եւ անդ տեղակային սակաւագոյն գործածեալ տառինք` Չ, Ժ, Ճ, Ջ:
+Մին ի նպատանաց այսց շարուածոց էր զբաղեցուցանել զնուազագոյն թիւ ստեղանց, առ յապահովել զյարմարութիւն, որպէս եւ զտեղի ունել վասն կիտադրական նշանաց: `Backslash` չգործածի զի երկար ձգումն իցէ վասն աջ ճկոյթի: Եւ զի յաճախագոյն կիտադրական նշանք՝ ստորակէտ եւ վերջակէտ հեշտ հասանելի լիցին, ընտրեալ եմք զ-`Slash` ստեղն, նմանեալ ЙЦУКЕН շարուածոց ռուսաց: Երեք տառք որք չէին մասն սկզբնական այբուբէնի Մաշտոցի՝ և, Օ եւ Ֆ փոխադրեալ են յերրորդ շերտն: Արտաքս երից գլխաւոր շարաց ստեղնաշարի են չորք ստեղանք ի շարս թուոց՝ 4-5 եւ 9-0 զի ամենահասանելիք են, եւ անդ տեղակային սակաւագոյն գործածեալ տառինք` Չ, Ձ, Ժ, Ջ:
 
 ### Կիտադրութիւն
 
 Հանուրք կիտադրական նշանք առկայ են յայս շարուածս, նոյնիսն «Պատիւ նշանն»(՟) գտաւ զտեղի իւր:
 
-**ՈՒՇԱԴՐՈՒԹԻՒՆ**: Վերջակէտ, ենթամնայ եւ միջակէտ նշանք յառաջնում շերտի են սովորական comma, dash եւ colon նշանք Unicode-ի, այղ ՈՉ ՀԱՅԿԱԿԱՆ ՏԱՐԲԵՐԱԿՔ: Վասն դոցինց պարտ է սեղմել `AltGr + ,(/)` կամ `AltGr + :(3)` վասն վերջակիտոյ: `AltGr + -` վասն ենթամնայի եւ `Shift + .(7)` վասն միջակիտոյ:
-
-Վասն զի ոչ ամենեցունց կարէր `Shift + ,(/)` յարմար լինել վասն վերջակիտոյ, որոշեալ եմք կրկնաւրինակել այն ի տեղւոջ 3 ստեղան: Սակայն, այս մասն **ԱՆԱՒԱՐՏ ԻՑԷ**, եւ ուրախ եղիցուք առաջարկաց քոց:
+**ՈՒՇԱԴՐՈՒԹԻՒՆ**: Վերջակէտ, ենթամնայ եւ միջակէտ նշանք յառաջնում շերտի են հայկական տարբերակք, այղ ոչ նշանք Unicode֊ի: Վասն մուծանելոյ զ-Unicode տարբերակ միջակիտի, պարտ է `Shift + 3` սեղմել, վասն վերջակիտի (colon)՝ `AltGr + Shift + ;`, իսկ dash լինի ի `AltGr + -`։
 
 ### Երրորդ շերտ
 
 Այս շարուածք լայնաւրէն գործածեն զերրորդ շերտ նշանաց, որ հասանելի է AltGr ստեղամբ (աջ Alt): Վասն զի շարք թուոց զբաղեցեալ է կիտադրական նշանաւք եւ տառիւք, բուն թիւք հասանելի են յերրորդ շերտի սեղմամբ `AltGR + {Թիւ}`-ի:
 
-Since the number row is occupied with letters and diacritics, the numbers are accessible at the third layer, by simply pressing `AltGr + {Number}`. Սեղմամբ `AltGr + Ո`, `AltGr + Ե`, `AltGr + Փ`-ոց բանան Օ, և եւ Ֆ տառք: Իսկ `AltGr + Դ` տայ զնշան Դրամի Հայոց (֏):
+Սեղմամբ `AltGr + Ո`, `AltGr + Ե`, `AltGr + Փ`-ոց բանան Օ, և եւ Ֆ տառք: Իսկ `AltGr + Դ` տայ զնշան Դրամի Հայ (֏):
 
 <div id="xcl-analytics"></div>
 
@@ -129,7 +120,7 @@ setxkbmap -layout am -variant Dpir
 Առ զվերջին `dpir_for_windows.zip` փաթեթ, բաց այն եւ գործարկիր զ-`setup.exe`, յետ որոյ յընտրութեան լեզուաց գտցես զ-`Armenian Dpir Layout` տարբերակն:
 
 ### Mac
-Առ այժմ չէ ստեղծեալ փաթեթք վասն Mac-ի:
+Առ այժմ չէ ստեղծեալ փաթեթ վասն Mac-ի:
 
 ---
 
@@ -158,7 +149,7 @@ Hence we decided to create a new one based on the letter frequencies from the re
 
 ## The name?
 
-What does "Dpir" stand for? Dpir means a scholar, meanwhile it also carries the meaning of "smart". And besides that, if someone speaking Western Armenian said "Dpir!", it would mean "Type!", commanding to type.
+What does "Dpir" stand for? Dpir means a scholar, meanwhile it also carries the meaning of "smart".
 
 <div id="en-dp"></div>
 
@@ -172,9 +163,7 @@ One of the goals of this layout was to use as few keys as possible, in order to 
 
 All of the diacritic signs used in Armenian are present on this layout, even the "Pativ Nshan"(՟).
 
-**WARNING**: The fullstop, entamna and period symbols on the first level are the regular comma, dash and colon from the Unicode. To get the Armenian versions of those, press `AltGr + ,(/)` or `AltGr + :(3)` for the fullstop, `AltGr + -` for the entamna and `Shift + .(7)` for the period. 
-
-Since it might not be comfortable for everyone to press `Shift + ,`(/) in order to get the fullstop, it was decided to replicate it on the key 3. Though, this one is **WORK IN PROGRESS**, we're open to your suggestions.
+**WARNING**: The fullstop, entamna and period symbols on the first level are NOT the regular comma, dash and colon from the Unicode. To get the Unicode versions, type `Shift + 3` for period, `AltGr + Shift + ;` for colon, and `AltGr + -` for dash.
 
 ### Third layer
 
