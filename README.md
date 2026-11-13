@@ -90,6 +90,13 @@ Read in: [English](#en) | [Հայերէն](#xcl)
 
 <img src="analytics/finger_usage.png" alt="Finger usage chart" width="600"/>
 
+### Կրկնակի շահագործումն մատանց
+
+Քանակ կրկնակի շահագործման մատանց (same-finger bigram ցուցանէ թե որքան յաճախ մի եւ նոյն մատ տպէ զյաջորդականութիւն երկուց կամ աւել տառուց)
+ եւս կարի փոքր է համեմատեալ այղ շարուածոց:
+
+<img src="analytics/sfb.png" alt="SFB" width="600"/>
+
 <div id="xcl-install"></div>
 
 ## Փորձել եւ ներբեռնել 
@@ -210,6 +217,13 @@ The amount of usage of each finger has been balanced out too and it's more stabl
 <img src="analytics/finger_usage.png" alt="Finger usage chart" width="600"/>
 
 <div id="en-install"></div>
+
+### Same-finger bigrams
+
+The number of SFBs (same-finger bigrams, a metric showing how often is the same finger used to type two or more consecutive letters) is also significantly lower than on other layouts.
+
+<img src="analytics/sfb.png" alt="SFB" width="600"/>
+
 
 ## Try and Install
 
